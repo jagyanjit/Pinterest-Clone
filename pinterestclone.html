@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pinspire - Premium Pinterest Clone</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f0f0f0;
+            overflow-x: hidden;
+        }
+
+        /* Header Styles */
+        header {
+            background: white;
+            padding: 12px 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e60023;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-btn {
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 24px;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .nav-btn.active {
+            background: #111;
+            color: white;
+        }
+
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 48px 14px 48px;
+            border: none;
+            border-radius: 24px;
+            background: #efefef;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .search-bar input:focus {
+            background: #e0e0e0;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #767676;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .icon-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .profile-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        /* Masonry Grid */
+        .masonry-grid {
+            column-count: 5;
+            column-gap: 16px;
+        }
+
+        @media (max-width: 1400px) {
+            .masonry-grid {
+                column-count: 4;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .masonry-grid {
+                column-count: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .masonry-grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .masonry-grid {
+                column-count: 1;
+            }
+        }
+
+        /* Pin Card */
+        .pin-card {
+            break-inside: avoid;
+            margin-bottom: 16px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .pin-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+
+        .pin-image-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pin-image {
+            width: 100%;
+            display: block;
+        }
+
+        .pin-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%, transparent 70%, rgba(0,0,0,0.3) 100%);
+            opacity: 0;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 16px;
+        }
+
+        .pin-card:hover .pin-overlay {
+            opacity: 1;
+        }
+
+        .pin-actions-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .save-btn {
+            background: #e60023;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .save-btn:hover {
+            background: #ad081b;
+        }
+
+        .save-btn.saved {
+            background: #111;
+        }
+
+        .pin-actions-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .action-btn {
+            background: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .pin-info {
+            padding: 12px 16px;
+        }
+
+        .pin-title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .pin-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .pin-author-pic {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .pin-author-name {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 1200px;
+            max-height: 90vh;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 48px;
+            height: 48px;
+            border: none;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-image-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+            max-width: 60%;
+        }
+
+        .modal-image {
+            max-width: 100%;
+            max-height: 90vh;
+            border-radius: 24px 0 0 24px;
+        }
+
+        .modal-details {
+            flex: 1;
+            padding: 32px;
+            overflow-y: auto;
+            max-width: 40%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-save-btn {
+            background: #e60023;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .modal-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #333;
+        }
+
+        .modal-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .modal-author-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 0;
+            border-top: 1px solid #efefef;
+            border-bottom: 1px solid #efefef;
+            margin-bottom: 24px;
+        }
+
+        .modal-author-pic {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .modal-author-details h4 {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .modal-author-details p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .follow-btn {
+            margin-left: auto;
+            padding: 12px 24px;
+            background: #efefef;
+            border: none;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .follow-btn:hover {
+            background: #e0e0e0;
+        }
+
+        .follow-btn.following {
+            background: #111;
+            color: white;
+        }
+
+        .comments-section {
+            margin-top: 24px;
+        }
+
+        .comments-section h3 {
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .comment {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .comment-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            flex-shrink: 0;
+        }
+
+        .comment-content h5 {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .comment-content p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .comment-input-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #efefef;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #efefef;
+            border-radius: 24px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .comment-input:focus {
+            border-color: #e60023;
+        }
+
+        /* Create Pin Modal */
+        .create-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 3000;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .create-modal.active {
+            display: flex;
+        }
+
+        .create-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 880px;
+            width: 100%;
+            padding: 32px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .create-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+        }
+
+        .create-header h2 {
+            font-size: 28px;
+        }
+
+        .create-body {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 16px;
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fafafa;
+        }
+
+        .upload-area:hover {
+            border-color: #e60023;
+            background: #fff;
+        }
+
+        .upload-area.has-image {
+            padding: 0;
+            border: none;
+        }
+
+        .preview-image {
+            width: 100%;
+            border-radius: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #efefef;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: #e60023;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .publish-btn {
+            width: 100%;
+            padding: 16px;
+            background: #e60023;
+            color: white;
+            border: none;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+
+        .publish-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 48px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e60023;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            border: 2px solid #efefef;
+            background: white;
+            border-radius: 24px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover {
+            border-color: #333;
+        }
+
+        .filter-btn.active {
+            background: #111;
+            color: white;
+            border-color: #111;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e60023;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .has-notification {
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .create-body {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                flex-direction: column;
+            }
+            
+            .modal-image-container,
+            .modal-details {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="logo">
+            <svg viewBox="0 0 24 24" fill="#e60023">
+                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 19.5c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25zm1.961-5.928c-.904.975-.947 1.514-.935 2.178h-2.005c-.007-1.475.438-2.264 1.35-3.326.48-.558.945-1.14.945-1.924 0-1.238-1.009-2.243-2.25-2.243S9.006 9.262 9.006 10.5H7.001c0-2.481 2.019-4.5 4.5-4.5s4.5 2.019 4.5 4.5c0 1.445-.711 2.457-1.578 3.572z"/>
+            </svg>
+            <span>Pinspire</span>
+        </div>
+        <nav class="nav-links">
+            <button class="nav-btn active" data-page="home">Home</button>
+            <button class="nav-btn" data-page="explore">Explore</button>
+            <button class="nav-btn" data-page="create" id="createBtn">Create</button>
+        </nav>
+        <div class="search-bar">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M10 18a7.952 7.952 0 004.897-1.688l4.396 4.396 1.414-1.414-4.396-4.396A7.952 7.952 0 0018 10c0-4.411-3.589-8-8-8s-8 3.589-8 8 3.589 8 8 8zm0-14c3.309 0 6 2.691 6 6s-2.691 6-6 6-6-2.691-6-6 2.691-6 6-6z"/>
+            </svg>
+            <input type="text" id="searchInput" placeholder="Search for ideas, inspiration...">
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn has-notification" id="notificationBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+                </svg>
+                <span class="notification-badge">3</span>
+            </button>
+            <button class="icon-btn" id="messageBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/>
+                </svg>
+            </button>
+            <div class="profile-pic" id="profileBtn">U</div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="nature">Nature</button>
+            <button class="filter-btn" data-filter="architecture">Architecture</button>
+            <button class="filter-btn" data-filter="food">Food</button>
+            <button class="filter-btn" data-filter="fashion">Fashion</button>
+            <button class="filter-btn" data-filter="travel">Travel</button>
+            <button class="filter-btn" data-filter="art">Art</button>
+            <button class="filter-btn" data-filter="technology">Technology</button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading amazing pins...</p>
+        </div>
+
+        <!-- Masonry Grid -->
+        <div class="masonry-grid" id="masonryGrid"></div>
+    </div>
+
+    <!-- Pin Detail Modal -->
+    <div class="modal" id="pinModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                </svg>
+            </button>
+            <div class="modal-image-container">
+                <img class="modal-image" id="modalImage" src="" alt="">
+            </div>
+            <div class="modal-details">
+                <div class="modal-header">
+                    <div class="action-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </div>
+                    <button class="modal-save-btn" id="modalSaveBtn">Save</button>
+                </div>
+                <h1 class="modal-title" id="modalTitle">Amazing Design Inspiration</h1>
+                <p class="modal-description" id="modalDescription">
+                    Discover this beautiful piece of creativity that will inspire your next project.
+                </p>
+                <div class="modal-author-info">
+                    <div class="modal-author-pic"></div>
+                    <div class="modal-author-details">
+                        <h4 id="modalAuthorName">Creative Designer</h4>
+                        <p id="modalAuthorFollowers">1.2K followers</p>
+                    </div>
+                    <button class="follow-btn" id="followBtn">Follow</button>
+                </div>
+                <div class="comments-section">
+                    <h3>Comments</h3>
+                    <div id="commentsContainer">
+                        <div class="comment">
+                            <div class="comment-pic"></div>
+                            <div class="comment-content">
+                                <h5>Sarah Johnson</h5>
+                                <p>This is absolutely stunning! Love the color palette 🎨</p>
+                            </div>
+                        </div>
+                        <div class="comment">
+                            <div class="comment-pic" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);"></div>
+                            <div class="comment-content">
+                                <h5>Mike Chen</h5>
+                                <p>Great inspiration for my upcoming project!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-input-container">
+                        <input type="text" class="comment-input" id="commentInput" placeholder="Add a comment...">
+                        <button class="action-btn" id="addCommentBtn">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="#e60023">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Pin Modal -->
+    <div class="create-modal" id="createModal">
+        <div class="create-content">
+            <div class="create-header">
+                <h2>Create Pin</h2>
+                <button class="modal-close" id="closeCreateModal">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="create-body">
+                <div>
+                    <div class="upload-area" id="uploadArea">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="#767676">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                        </svg>
+                        <p style="margin-top: 16px; color: #333; font-weight: 600;">Click to upload</p>
+                        <p style="margin-top: 8px; color: #767676; font-size: 14px;">Recommendation: Use high-quality .jpg files less than 20MB</p>
+                        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+                <div>
+                    <form id="createPinForm">
+                        <div class="form-group">
+                            <label for="pinTitle">Title</label>
+                            <input type="text" id="pinTitle" placeholder="Add your title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pinDescription">Description</label>
+                            <textarea id="pinDescription" placeholder="Tell everyone what your Pin is about" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="pinLink">Link (optional)</label>
+                            <input type="url" id="pinLink" placeholder="Add a destination link">
+                        </div>
+                        <div class="form-group">
+                            <label for="pinBoard">Board</label>
+                            <input type="text" id="pinBoard" placeholder="Choose a board" required>
+                        </div>
+                        <button type="submit" class="publish-btn" id="publishBtn" disabled>Publish</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        const categories = ['nature', 'architecture', 'food', 'fashion', 'travel', 'art', 'technology'];
+        const titles = [
+            'Stunning Mountain View',
+            'Modern Architecture',
+            'Delicious Cuisine',
+            'Fashion Trends 2024',
+            'Paradise Beach',
+            'Abstract Art',
+            'Tech Innovation',
+            'Urban Landscape',
+            'Gourmet Food',
+            'Street Fashion',
+            'Travel Destinations',
+            'Digital Art',
+            'Smart Technology',
+            'Nature Photography',
+            'Interior Design',
+            'Culinary Arts',
+            'Vintage Fashion',
+            'Adventure Travel',
+            'Contemporary Art',
+            'Future Tech'
+        ];
+
+        const authors = [
+            'Emma Wilson',
+            'James Chen',
+            'Sofia Rodriguez',
+            'Lucas Brown',
+            'Olivia Taylor',
+            'Noah Anderson',
+            'Ava Martinez',
+            'Ethan Garcia'
+        ];
+
+        const descriptions = [
+            'Discover amazing inspiration for your next creative project',
+            'Beautiful composition and stunning visual storytelling',
+            'Elevate your style with these trendsetting ideas',
+            'Mouth-watering creations that inspire culinary adventures',
+            'Explore breathtaking destinations around the world',
+            'Express yourself through vibrant artistic vision',
+            'Transform your space into a beautiful sanctuary',
+            'Cutting-edge innovations shaping our future',
+            'Find inspiration in everyday moments',
+            'Curated collection of premium quality designs'
+        ];
+
+        // Generate pins with Picsum Photos
+        function generatePins(count = 30) {
+            const pins = [];
+            const heights = [300, 350, 400, 450, 500, 550];
+            
+            for (let i = 0; i < count; i++) {
+                const category = categories[Math.floor(Math.random() * categories.length)];
+                const height = heights[Math.floor(Math.random() * heights.length)];
+                const width = 400;
+                const randomId = Math.floor(Math.random() * 1000);
+                
+                pins.push({
+                    id: Date.now() + i,
+                    image: `https://picsum.photos/${width}/${height}?random=${randomId}`,
+                    title: titles[Math.floor(Math.random() * titles.length)],
+                    author: authors[Math.floor(Math.random() * authors.length)],
+                    category: category,
+                    description: descriptions[Math.floor(Math.random() * descriptions.length)],
+                    saves: Math.floor(Math.random() * 10000),
+                    likes: Math.floor(Math.random() * 5000),
+                    saved: false
+                });
+            }
+            return pins;
+        }
+
+        let allPins = generatePins();
+        let currentFilter = 'all';
+
+        // Render pins
+        function renderPins(pins) {
+            const grid = document.getElementById('masonryGrid');
+            grid.innerHTML = '';
+            
+            pins.forEach(pin => {
+                const pinCard = document.createElement('div');
+                pinCard.className = 'pin-card';
+                pinCard.dataset.category = pin.category;
+                pinCard.dataset.pinId = pin.id;
+                
+                pinCard.innerHTML = `
+                    <div class="pin-image-container">
+                        <img src="${pin.image}" alt="${pin.title}" class="pin-image" loading="lazy">
+                        <div class="pin-overlay">
+                            <div class="pin-actions-top">
+                                <button class="save-btn ${pin.saved ? 'saved' : ''}" data-pin-id="${pin.id}">
+                                    ${pin.saved ? 'Saved' : 'Save'}
+                                </button>
+                                <div class="action-btn">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="black">
+                                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="pin-actions-bottom">
+                                <div class="action-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="black">
+                                        <path d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6c0-.83-.67-1.5-1.5-1.5S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.91-1.38z"/>
+                                    </svg>
+                                </div>
+                                <div class="action-btn">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="black">
+                                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pin-info">
+                        <div class="pin-title">${pin.title}</div>
+                        <div class="pin-author">
+                            <div class="pin-author-pic"></div>
+                            <div class="pin-author-name">${pin.author}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Click on card to open modal
+                pinCard.querySelector('.pin-image-container').addEventListener('click', (e) => {
+                    if (!e.target.closest('.save-btn') && !e.target.closest('.action-btn')) {
+                        openPinModal(pin);
+                    }
+                });
+                
+                // Save button click
+                const saveBtn = pinCard.querySelector('.save-btn');
+                saveBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleSave(pin.id);
+                });
+                
+                grid.appendChild(pinCard);
+            });
+        }
+
+        // Toggle save
+        function toggleSave(pinId) {
+            const pin = allPins.find(p => p.id == pinId);
+            if (pin) {
+                pin.saved = !pin.saved;
+                const saveBtns = document.querySelectorAll(`[data-pin-id="${pinId}"]`);
+                saveBtns.forEach(btn => {
+                    if (pin.saved) {
+                        btn.classList.add('saved');
+                        btn.textContent = 'Saved';
+                    } else {
+                        btn.classList.remove('saved');
+                        btn.textContent = 'Save';
+                    }
+                });
+            }
+        }
+
+        // Open pin modal
+        function openPinModal(pin) {
+            const modal = document.getElementById('pinModal');
+            document.getElementById('modalImage').src = pin.image;
+            document.getElementById('modalTitle').textContent = pin.title;
+            document.getElementById('modalDescription').textContent = pin.description;
+            document.getElementById('modalAuthorName').textContent = pin.author;
+            document.getElementById('modalAuthorFollowers').textContent = `${(Math.random() * 10).toFixed(1)}K followers`;
+            
+            const modalSaveBtn = document.getElementById('modalSaveBtn');
+            modalSaveBtn.onclick = () => toggleSave(pin.id);
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('pinModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Close on background click
+        document.getElementById('pinModal').addEventListener('click', (e) => {
+            if (e.target.id === 'pinModal') {
+                document.getElementById('pinModal').classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Follow button
+        document.getElementById('followBtn').addEventListener('click', function() {
+            this.classList.toggle('following');
+            this.textContent = this.classList.contains('following') ? 'Following' : 'Follow';
+        });
+
+        // Add comment
+        document.getElementById('addCommentBtn').addEventListener('click', () => {
+            const input = document.getElementById('commentInput');
+            if (input.value.trim()) {
+                const commentsContainer = document.getElementById('commentsContainer');
+                const newComment = document.createElement('div');
+                newComment.className = 'comment';
+                newComment.innerHTML = `
+                    <div class="comment-pic" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                    <div class="comment-content">
+                        <h5>You</h5>
+                        <p>${input.value}</p>
+                    </div>
+                `;
+                commentsContainer.appendChild(newComment);
+                input.value = '';
+            }
+        });
+
+        // Enter key for comment
+        document.getElementById('commentInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('addCommentBtn').click();
+            }
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                currentFilter = filter;
+                
+                if (filter === 'all') {
+                    renderPins(allPins);
+                } else {
+                    const filtered = allPins.filter(pin => pin.category === filter);
+                    renderPins(filtered);
+                }
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            if (searchTerm === '') {
+                if (currentFilter === 'all') {
+                    renderPins(allPins);
+                } else {
+                    const filtered = allPins.filter(pin => pin.category === currentFilter);
+                    renderPins(filtered);
+                }
+            } else {
+                const searched = allPins.filter(pin => 
+                    pin.title.toLowerCase().includes(searchTerm) ||
+                    pin.description.toLowerCase().includes(searchTerm) ||
+                    pin.category.toLowerCase().includes(searchTerm)
+                );
+                renderPins(searched);
+            }
+        });
+
+        // Create pin modal
+        document.getElementById('createBtn').addEventListener('click', () => {
+            document.getElementById('createModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        document.getElementById('closeCreateModal').addEventListener('click', () => {
+            document.getElementById('createModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        });
+
+        // Upload area
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        let uploadedImageData = null;
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImageData = e.target.result;
+                    uploadArea.innerHTML = `<img src="${uploadedImageData}" class="preview-image" alt="Preview">`;
+                    uploadArea.classList.add('has-image');
+                    updatePublishButton();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Enable publish button
+        function updatePublishButton() {
+            const title = document.getElementById('pinTitle').value;
+            const description = document.getElementById('pinDescription').value;
+            const board = document.getElementById('pinBoard').value;
+            
+            if (uploadedImageData && title && description && board) {
+                document.getElementById('publishBtn').disabled = false;
+            } else {
+                document.getElementById('publishBtn').disabled = true;
+            }
+        }
+
+        document.getElementById('pinTitle').addEventListener('input', updatePublishButton);
+        document.getElementById('pinDescription').addEventListener('input', updatePublishButton);
+        document.getElementById('pinBoard').addEventListener('input', updatePublishButton);
+
+        // Create pin form
+        document.getElementById('createPinForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newPin = {
+                id: Date.now(),
+                image: uploadedImageData,
+                title: document.getElementById('pinTitle').value,
+                author: 'You',
+                category: 'art',
+                description: document.getElementById('pinDescription').value,
+                saves: 0,
+                likes: 0,
+                saved: false
+            };
+            
+            allPins.unshift(newPin);
+            renderPins(allPins);
+            
+            // Close modal and reset
+            document.getElementById('createModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('createPinForm').reset();
+            uploadArea.classList.remove('has-image');
+            uploadArea.innerHTML = `
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="#767676">
+                    <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                </svg>
+                <p style="margin-top: 16px; color: #333; font-weight: 600;">Click to upload</p>
+                <p style="margin-top: 8px; color: #767676; font-size: 14px;">Recommendation: Use high-quality .jpg files less than 20MB</p>
+            `;
+            uploadedImageData = null;
+            
+            alert('Pin created successfully! 🎉');
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#e60023';
+            uploadArea.style.background = '#fff';
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ddd';
+            uploadArea.style.background = '#fafafa';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#ddd';
+            uploadArea.style.background = '#fafafa';
+            
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    uploadedImageData = e.target.result;
+                    uploadArea.innerHTML = `<img src="${uploadedImageData}" class="preview-image" alt="Preview">`;
+                    uploadArea.classList.add('has-image');
+                    updatePublishButton();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Infinite scroll
+        let loading = false;
+        window.addEventListener('scroll', () => {
+            if (loading) return;
+            
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 1000) {
+                loading = true;
+                document.getElementById('loading').classList.add('active');
+                
+                setTimeout(() => {
+                    const newPins = generatePins(15);
+                    allPins = [...allPins, ...newPins];
+                    
+                    if (currentFilter === 'all') {
+                        renderPins(allPins);
+                    } else {
+                        const filtered = allPins.filter(pin => pin.category === currentFilter);
+                        renderPins(filtered);
+                    }
+                    
+                    document.getElementById('loading').classList.remove('active');
+                    loading = false;
+                }, 1000);
+            }
+        });
+
+        // Notification button
+        document.getElementById('notificationBtn').addEventListener('click', () => {
+            alert('3 new notifications:\n\n📌 Sarah liked your pin\n💬 Mike commented on your post\n👤 Emma started following you');
+        });
+
+        // Message button
+        document.getElementById('messageBtn').addEventListener('click', () => {
+            alert('Messages feature - Coming soon! 💬');
+        });
+
+        // Profile button
+        document.getElementById('profileBtn').addEventListener('click', () => {
+            alert('Profile page - Coming soon! 👤');
+        });
+
+        // Initial render
+        renderPins(allPins);
+    </script>
+</body>
+</html>
